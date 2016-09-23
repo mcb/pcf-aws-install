@@ -1,0 +1,18 @@
+---
+jobs:
+- name: cloudformation
+  plan:
+  - get: pipeline
+  - task: cloudformation
+    file: pipeline/cloudformation.yml
+    params:
+      AWS_ACCESS_KEY_ID: {{aws-access-key-id}}
+      AWS_SECRET_ACCESS_KEY: {{aws-secret-access-key}}
+      AWS_DEFAULT_REGION: {{aws-default-region}}
+
+resources:
+- name: pipeline
+  type: git
+  source:
+    uri: {{git-uri}}
+    branch: {{git-branch}}
