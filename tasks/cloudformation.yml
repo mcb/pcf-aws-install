@@ -14,6 +14,7 @@ params:
 
 inputs:
 - name: pipeline
+- name: cloudformation
 
 run:
   path: pipeline/tasks/cloudformation.sh
