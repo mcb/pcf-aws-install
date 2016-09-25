@@ -17,7 +17,7 @@ jobs:
   - task: create-stack
     file: pipeline/tasks/create-stack.yml
     params:
-      <<: *cf-params
+      <<: *aws-params
       AWS_SSL_CERTIFICATE_ARN: {{aws-ssl-certificate-arn}}
 
 - name: delete-stack
@@ -26,7 +26,7 @@ jobs:
   - task: delete-stack
     file: pipeline/tasks/delete-stack.yml
     params:
-      <<: *cf-params
+      <<: *aws-params
 
 resources:
 - name: pipeline
