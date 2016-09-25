@@ -12,4 +12,5 @@ params="$params ParameterKey=07SSLCertificateARN,ParameterValue=$AWS_SSL_CERTIFI
 aws cloudformation create-stack \
     --stack-name pcf \
     --template-body file://$template \
+    --capabilities CAPABILITY_IAM \
     --parameters $params

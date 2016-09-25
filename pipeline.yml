@@ -1,14 +1,14 @@
 ---
 jobs:
-- name: run-cloudformation
+- name: create-stack
   plan:
   - get: pipeline
   - get: cloudformation
     resource: elastic-runtime
     params:
       globs: [ "*cloudformation.json" ]
-  - task: cloudformation
-    file: pipeline/tasks/cloudformation.yml
+  - task: create-stack
+    file: pipeline/tasks/create-stack.yml
     params:
       AWS_ACCESS_KEY_ID: {{aws-access-key-id}}
       AWS_SECRET_ACCESS_KEY: {{aws-secret-access-key}}

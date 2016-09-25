@@ -18,4 +18,4 @@ inputs:
 - name: cloudformation
 
 run:
-  path: pipeline/tasks/cloudformation.sh
+  path: pipeline/tasks/create-stack.sh
