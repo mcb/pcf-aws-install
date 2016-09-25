@@ -24,14 +24,3 @@ ec2Instance=$(aws ec2 run-instances \
   --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":100,"VolumeType":"gp2"}}]')
 
 aws ec2 create-tags --resources $(echo $ec2Instance | jq -r ".Instances[0].InstanceId") --tags "Key=Name,Value=Ops Manager"
-
----
-
-rdsAddress=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfRdsAddress") | .OutputValue')
-
-dbInstances=$(aws rds describe-db-instances)
-dbInstanceId=$(echo $dbInstances | jq -r ".DBInstances[] | select(.Endpoint.Address == \"$rdsAddress\") | .DBInstanceIdentifier")
-
-aws rds delete-db-instance --skip-final-snapshot --db-instance-identifier $dbInstanceId
-
-aws rds wait db-instance-deleted --db-instance-identifier $dbInstanceId
