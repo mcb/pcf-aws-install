@@ -36,6 +36,15 @@ jobs:
     params:
       <<: *aws-params
 
+- name: deploy-opsman
+  plan:
+  - get: pipeline
+  - task: deploy-opsman
+    file: pipeline/tasks/deploy-opsman.yml
+    params:
+      <<: *aws-params
+      OPS_MANAGER_AMI: {{ops-manager-ami}}
+
 resources:
 - name: pipeline
   type: git
