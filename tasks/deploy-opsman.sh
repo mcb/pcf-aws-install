@@ -2,16 +2,14 @@
 
 set -e -x
 
-source $(dirname $0)/common.sh
-
 stackname=$AWS_CLOUDFORMATION_STACK_NAME
 opsmanAmi=$OPS_MANAGER_AMI
 keyName=$AWS_KEY_NAME
 
 stack=$(aws cloudformation describe-stacks --stack-name $stackname)
 
-opsmanSubnetId=$(get_output_value PcfPublicSubnetId $stack)
-opsmanSgId=$(get_output_value PcfOpsManagerSecurityGroupId $stack)
+opsmanSgId=$(echo $stack | jq -r ".Stacks[0].Outputs[] | select(.OutputKey == "PcfOpsManagerSecurityGroupId") | .OutputValue")
+opsmanSubnetId=$(echo $stack | jq -r ".Stacks[0].Outputs[] | select(.OutputKey == "PcfPublicSubnetId") | .OutputValue")
 
 ec2Instance=$(aws ec2 run-instances \
   --image-id $opsmanAmi \
