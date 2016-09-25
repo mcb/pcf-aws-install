@@ -2,10 +2,14 @@
 
 set -e
 
-export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+template=$(ls cloudformation/*cloudformation.json)
 
-ls -al cloudformation
+params="01NATKeyPair=pcf"
+params="$params,05RdsUsername=boshuser"
+params="$params,06RdsPassword=boshpass"
+params="$params,07SSLCertificateARN=$AWS_SSL_CERTIFICATE_ARN"
 
-aws iam list-server-certificates
+aws cloudformation create-stack \
+    --stack-name pcf \
+    --template-body file://$template \
+    --parameters "$params"
