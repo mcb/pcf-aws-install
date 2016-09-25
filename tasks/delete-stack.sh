@@ -2,7 +2,7 @@
 
 set -e -x
 
-stackname=pcf
+stackname=$AWS_CLOUDFORMATION_STACK_NAME
 
 aws cloudformation delete-stack --stack-name $stackname
 
