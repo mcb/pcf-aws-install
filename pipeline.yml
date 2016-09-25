@@ -13,7 +13,16 @@ jobs:
       AWS_ACCESS_KEY_ID: {{aws-access-key-id}}
       AWS_SECRET_ACCESS_KEY: {{aws-secret-access-key}}
       AWS_DEFAULT_REGION: {{aws-default-region}}
+      AWS_CLOUDFORMATION_STACK_NAME: {{aws-cloudformation-stack-name}}
       AWS_SSL_CERTIFICATE_ARN: {{aws-ssl-certificate-arn}}
+
+- name: delete-stack
+  plan:
+  - get: pipeline
+  - task: delete-stack
+    file: pipeline/tasks/delete-stack.yml
+    params:
+      AWS_CLOUDFORMATION_STACK_NAME: {{aws-cloudformation-stack-name}}
 
 resources:
 - name: pipeline
