@@ -21,4 +21,8 @@ ec2Instance=$(aws ec2 run-instances \
   --associate-public-ip-address \
   --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":100,"VolumeType":"gp2"}}]')
 
-aws ec2 create-tags --resources $(echo $ec2Instance | jq -r ".Instances[0].InstanceId") --tags "Key=Name,Value=Ops Manager"
+ec2InstanceId=$(echo $ec2Instance | jq -r ".Instances[0].InstanceId")
+
+aws ec2 create-tags --resources $ec2InstanceId --tags "Key=Name,Value=Ops Manager"
+
+aws ec2 wait instance-running --instance-ids $ec2InstanceId
