@@ -20,6 +20,14 @@ jobs:
       <<: *aws-params
       AWS_SSL_CERTIFICATE_ARN: {{aws-ssl-certificate-arn}}
 
+- name: delete-rds
+  plan:
+  - get: pipeline
+  - task: delete-rds
+    file: pipeline/tasks/delete-rds.yml
+    params:
+      <<: *aws-params
+
 - name: delete-stack
   plan:
   - get: pipeline
