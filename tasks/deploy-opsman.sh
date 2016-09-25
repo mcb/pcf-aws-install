@@ -8,8 +8,8 @@ keyName=$AWS_KEY_NAME
 
 stack=$(aws cloudformation describe-stacks --stack-name $stackname)
 
-opsmanSgId=$(echo $stack | jq -r ".Stacks[0].Outputs[] | select(.OutputKey == "PcfOpsManagerSecurityGroupId") | .OutputValue")
-opsmanSubnetId=$(echo $stack | jq -r ".Stacks[0].Outputs[] | select(.OutputKey == "PcfPublicSubnetId") | .OutputValue")
+opsmanSgId=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfOpsManagerSecurityGroupId") | .OutputValue')
+opsmanSubnetId=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfPublicSubnetId") | .OutputValue')
 
 ec2Instance=$(aws ec2 run-instances \
   --image-id $opsmanAmi \
