@@ -2,9 +2,11 @@
 
 set -e -x
 
-instances=$(aws rds describe-db-instances)
+stackname=$AWS_CLOUDFORMATION_STACK_NAME
 
-instanceId=$(echo $instances | jq -r ".DBInstances[] | select(.Endpoint.Address == \"$rdsAddress\") | .DBInstanceIdentifier")
+rdsAddress=$(aws cloudformation describe-stacks --stack-name $stackname | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfRdsAddress") | .OutputValue')
+
+instanceId=$(aws rds describe-db-instances | jq -r ".DBInstances[] | select(.Endpoint.Address == \"$rdsAddress\") | .DBInstanceIdentifier")
 
 aws rds delete-db-instance --skip-final-snapshot --db-instance-identifier $instanceId
 
