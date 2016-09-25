@@ -4,8 +4,7 @@ set -e -x
 
 template=$(ls cloudformation/*cloudformation.json)
 
-params=
-params="$params ParameterKey=01NATKeyPair,ParameterValue=pcf"
+params="ParameterKey=01NATKeyPair,ParameterValue=pcf"
 params="$params ParameterKey=05RdsUsername,ParameterValue=boshuser"
 params="$params ParameterKey=06RdsPassword,ParameterValue=boshpass"
 params="$params ParameterKey=07SSLCertificateARN,ParameterValue=$AWS_SSL_CERTIFICATE_ARN"
