@@ -7,7 +7,9 @@ opsmanDomain=$OPS_MANAGER_DOMAIN
 
 recordSets=$(aws route53 list-resource-record-sets --hosted-zone-id $hostedZoneId)
 
-publicIp=$(echo $recordSets | jq -r --arg domain "$opsmanDomain." '.ResourceRecordSets[] | select(.Name == $domain and .Type == "A") | .ResourceRecords[0].Value')
+recordSet=$(echo $recordSets | jq -r --arg domain "$opsmanDomain." '.ResourceRecordSets[] | select(.Name == $domain and .Type == "A")')
+
+publicIp=$(echo $recordSet | jq -r '.ResourceRecords[0].Value')
 
 # Delete the record set
 cat <<EOF >change-resource-record-sets.json
@@ -16,16 +18,7 @@ cat <<EOF >change-resource-record-sets.json
   "Changes": [
     {
       "Action": "DELETE",
-      "ResourceRecordSet": {
-        "Name": "$opsmanDomain",
-        "Type": "A",
-        "TTL": 300,
-        "ResourceRecords": [
-          {
-            "Value": "$publicId"
-          }
-        ]
-      }
+      "ResourceRecordSet": $recordSet
     }
   ]
 }
