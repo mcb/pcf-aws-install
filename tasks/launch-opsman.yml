@@ -20,4 +20,4 @@ inputs:
 - name: pipeline
 
 run:
-  path: pipeline/tasks/deploy-opsman.sh
+  path: pipeline/tasks/launch-opsman.sh
