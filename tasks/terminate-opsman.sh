@@ -47,5 +47,3 @@ aws ec2 release-address --allocation-id $allocationId
 # Terminate the EC2 instance
 
 aws ec2 terminate-instances --instance-ids $instanceId
-
-aws ec2 wait instance-terminated $instancdId
