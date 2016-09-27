@@ -30,14 +30,19 @@ changeId=$(echo $changeRecordSet | jq -r '.ChangeInfo.Id')
 
 aws route53 wait resource-record-sets-changed --id $changeId
 
-# Disassociate and release the elasticIp
+# Disassociate the elasticIp
 
 address=$(aws ec2 describe-addresses | jq -r --arg publicIp $publicIp '.Addresses[] | select(.PublicIp == $publicIp)')
 
 associationId=$(echo $address | jq -r '.AssociationId')
+allocationId=$(echo $address | jq -r '.AllocationId')
 instanceId=$(echo $address | jq -r '.InstanceId')
 
 aws ec2 disassociate-address --association-id $associationId
+
+# Release the elasticIp
+
+aws ec2 release-address --allocation-id $allocationId
 
 # Terminate the EC2 instance
 
