@@ -31,8 +31,8 @@ aws ec2 wait instance-running --instance-ids $ec2InstanceId
 
 allocateAddress=$(aws ec2 allocate-address --domain vpc)
 
-publicId=$(echo allocateAddress | jq -r '.PublicIp')
-allocationId=$(echo allocateAddress | jq -r '.AllocationId')
+publicId=$(echo $allocateAddress | jq -r '.PublicIp')
+allocationId=$(echo $allocateAddress | jq -r '.AllocationId')
 
 aws ec2 associate-address --instance-id $ec2InstanceId --public-ip $publicId --allocation-id $allocationId
 
@@ -59,6 +59,6 @@ EOF
 
 createRecordSet=$(aws route53 change-resource-record-sets --hosted-zone-id $hostedZoneId --change-batch file://change-resource-record-sets.json)
 
-changeId=$(echo allocateAddress | jq -r '.ChangeInfo.Id')
+changeId=$(echo $createRecordSet | jq -r '.ChangeInfo.Id')
 
 aws route53 wait resource-record-sets-changed --id $changeId
