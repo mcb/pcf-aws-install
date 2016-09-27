@@ -45,7 +45,9 @@ jobs:
     params:
       <<: *aws-params
       AWS_KEY_NAME: {{aws-key-name}}
+      AWS_HOSTED_ZONE_ID: {{aws-hosted-zone-id}}
       OPS_MANAGER_AMI: {{ops-manager-ami}}
+      OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
 
 resources:
 - name: pipeline
