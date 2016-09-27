@@ -27,7 +27,7 @@ ec2InstanceId=$(echo $ec2Instance | jq -r ".Instances[0].InstanceId")
 
 aws ec2 create-tags --resources $ec2InstanceId --tags "Key=Name,Value=Ops Manager"
 
-aws ec2 wait instance-running --instance-ids $ec2InstanceId
+aws ec2 wait instance-status-ok --instance-ids $ec2InstanceId
 
 allocateAddress=$(aws ec2 allocate-address --domain vpc)
 
