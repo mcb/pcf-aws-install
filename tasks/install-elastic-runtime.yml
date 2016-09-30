@@ -1,0 +1,24 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: patrickcrocker/pcf-aws-install-ci
+    tag: 'latest'
+
+params:
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
+  AWS_DEFAULT_REGION:
+  AWS_KEY_NAME:
+  OPS_MANAGER_DOMAIN:
+  OPS_MANAGER_ADMIN_USER:
+  OPS_MANAGER_ADMIN_PASS:
+
+inputs:
+- name: pipeline
+- name: elastic-runtime
+
+run:
+  path: pipeline/tasks/install-elastic-runtime.sh

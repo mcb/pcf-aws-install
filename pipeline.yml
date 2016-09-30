@@ -59,6 +59,17 @@ jobs:
       AWS_HOSTED_ZONE_ID: {{aws-hosted-zone-id}}
       OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
 
+- name: install-elastic-runtime
+  plan:
+  - get: pipeline
+  - get: elastic-runtime
+    params:
+      globs: [ "cf-*.pivotal" ]
+  - task: install-elastic-runtime
+    file: pipeline/tasks/install-elastic-runtime.yml
+    params:
+      <<: *aws-params
+
 resources:
 - name: pipeline
   type: git
