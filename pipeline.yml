@@ -69,6 +69,9 @@ jobs:
     file: pipeline/tasks/install-elastic-runtime.yml
     params:
       <<: *aws-params
+      OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
+      OPS_MANAGER_ADMIN_USER: {{ops-manager-admin-user}}
+      OPS_MANAGER_ADMIN_PASS: {{ops-manager-admin-pass}}
 
 resources:
 - name: pipeline

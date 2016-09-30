@@ -16,7 +16,7 @@ UAA_ACCESS_TOKEN=$(uaac context admin | grep access_token | sed -e 's/^\s*access
 # Upload elastic-runtime
 file=$(ls elastic-runtime/cf-*.pivotal)
 
-curl "https://example.com/api/v0/available_products" \
+curl "https://$opsmanDomain/api/v0/available_products" -k \
     -X POST \
     -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
     -F "product[file]=@$file"
