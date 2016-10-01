@@ -29,10 +29,10 @@ UAA_ACCESS_TOKEN=$(uaac context admin | grep access_token | sed -e 's/^\s*access
 # Upload elastic-runtime
 file=$(ls elastic-runtime/cf-*.pivotal)
 
-curl "https://$opsmanDomain/api/v0/available_products" -k \
-    -X POST \
-    -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
-    -F "product[file]=@$file"
+# curl "https://$opsmanDomain/api/v0/available_products" -k \
+#     -X POST \
+#     -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
+#     -F "product[file]=@$file"
 
 # Stage elastic-runtime
 availableProducts=$(curl "https://$opsmanDomain/api/v0/available_products" -k \
@@ -45,10 +45,10 @@ curl "https://$opsmanDomain/api/v0/staged/products" -k \
     -X POST \
     -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
-    -d jq -n "{
+    -d $(jq -n "{
         name: $(echo cf | jq -R .),
         product_version: $(echo $cfVersion | jq -R .)
-      }"
+      }")
 
 # Get the guid
 stagedProducts=$(curl "https://$opsmanDomain/api/v0/staged/products" -k \

@@ -104,7 +104,7 @@ resources:
   type: pivnet
   source:
     api_token: {{pivnet-api-token}}
-    product_slug: elastic-runtime
+    product_slug: stemcells
     product_version: {{elstic-runtime-stemcell-version}}
 
 resource_types:
