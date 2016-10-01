@@ -41,14 +41,16 @@ availableProducts=$(curl "https://$opsmanDomain/api/v0/available_products" -k \
 
 cfVersion=$(echo $availableProducts | jq -r '.[] | select(.name == "cf") | .product_version')
 
+stageData=$(jq -n "{
+  name: \"cf\",
+  product_version: $(echo $cfVersion | jq -R .)
+}")
+
 curl "https://$opsmanDomain/api/v0/staged/products" -k \
     -X POST \
     -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
-    -d $(jq -n "{
-        name: $(echo cf | jq -R .),
-        product_version: $(echo $cfVersion | jq -R .)
-      }")
+    -d "$stageData"
 
 # Get the guid
 stagedProducts=$(curl "https://$opsmanDomain/api/v0/staged/products" -k \
