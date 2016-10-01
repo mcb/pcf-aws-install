@@ -8,13 +8,27 @@ image_resource:
     tag: 'latest'
 
 params:
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
+  AWS_DEFAULT_REGION:
+  AWS_CLOUDFORMATION_STACK_NAME:
   OPS_MANAGER_DOMAIN:
   OPS_MANAGER_ADMIN_USER:
   OPS_MANAGER_ADMIN_PASS:
+  CF_SYSTEM_DOMAIN:
+  CF_APPS_DOMAIN:
+  CF_NOTIFY_EMAIL:
+  CF_SMTP_FROM:
+  CF_SMTP_ADDRESS:
+  CF_SMTP_PORT:
+  CF_SMTP_USERNAME:
+  CF_SMTP_PASSWORD:
+  CF_S3_ENDPOINT:
 
 inputs:
 - name: pipeline
 - name: elastic-runtime
+- name: stemcell
 
 run:
   path: pipeline/tasks/install-elastic-runtime.sh

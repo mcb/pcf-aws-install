@@ -61,10 +61,14 @@ jobs:
 
 - name: install-elastic-runtime
   plan:
-  - get: pipeline
-  - get: elastic-runtime
-    params:
-      globs: [ "cf-*.pivotal" ]
+  - aggregate:
+    - get: pipeline
+    - get: elastic-runtime
+      params:
+        globs: [ "cf-*.pivotal" ]
+    - get: stemcell
+      params:
+        globs: [ "light-bosh-stemcell-*-aws-xen-hvm-ubuntu-trusty-go_agent.tgz" ]
   - task: install-elastic-runtime
     file: pipeline/tasks/install-elastic-runtime.yml
     params:
@@ -72,6 +76,15 @@ jobs:
       OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
       OPS_MANAGER_ADMIN_USER: {{ops-manager-admin-user}}
       OPS_MANAGER_ADMIN_PASS: {{ops-manager-admin-pass}}
+      CF_SYSTEM_DOMAIN: {{cf-system-domain}}
+      CF_APPS_DOMAIN: {{cf-apps-domain}}
+      CF_NOTIFY_EMAIL: {{cf-notify-email}}
+      CF_SMTP_FROM: {{cf-smtp-from}}
+      CF_SMTP_ADDRESS: {{cf-smtp-address}}
+      CF_SMTP_PORT: {{cf-smtp-port}}
+      CF_SMTP_USERNAME: {{cf-smtp-username}}
+      CF_SMTP_PASSWORD: {{cf-smtp-password}}
+      CF_S3_ENDPOINT: {{cf-s3-endpoint}}
 
 resources:
 - name: pipeline
@@ -86,6 +99,13 @@ resources:
     api_token: {{pivnet-api-token}}
     product_slug: elastic-runtime
     product_version: {{elstic-runtime-version}}
+
+- name: stemcell
+  type: pivnet
+  source:
+    api_token: {{pivnet-api-token}}
+    product_slug: elastic-runtime
+    product_version: {{elstic-runtime-stemcell-version}}
 
 resource_types:
 - name: pivnet
