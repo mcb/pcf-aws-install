@@ -188,3 +188,19 @@ curl "https://$opsmanDomain/api/v0/stemcells" -k \
 pendingChanges=$(curl "https://$opsmanDomain/api/v0/staged/pending_changes" -k \
     -X GET \
     -H "Authorization: Bearer $UAA_ACCESS_TOKEN")
+
+postDeployErrands=$(echo $pendingChanges | jq --arg cfGuid $cfGuid '[.product_changes[] | select (.guid == $cfGuid) | .errands[] | select(.post_deploy == true) | .name]')
+
+applyChanges=$(jq -n --arg cfGuid $cfGuid --arg postDeployErrands $postDeployErrands '{
+  enabled_errands: {
+    $cfGuid: {
+      post_deploy_errands: $postDeployErrands
+    }
+  }
+}')
+
+curl "https://$opsmanDomain/api/v0/installations" -k \
+    -X POST \
+    -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "$applyChanges"
