@@ -29,10 +29,10 @@ UAA_ACCESS_TOKEN=$(uaac context admin | grep access_token | sed -e 's/^\s*access
 # Upload elastic-runtime
 file=$(ls elastic-runtime/cf-*.pivotal)
 
-# curl "https://$opsmanDomain/api/v0/available_products" -k \
-#     -X POST \
-#     -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
-#     -F "product[file]=@$file"
+curl "https://$opsmanDomain/api/v0/available_products" -k \
+    -X POST \
+    -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
+    -F "product[file]=@$file"
 
 # Stage elastic-runtime
 availableProducts=$(curl "https://$opsmanDomain/api/v0/available_products" -k \
@@ -185,6 +185,6 @@ curl "https://$opsmanDomain/api/v0/stemcells" -k \
     -F "stemcell[file]=@$stemcell"
 
 # Apply Changes
-# pendingChanges=$(curl "https://$opsmanDomain/api/v0/staged/pending_changes" -k \
-#     -X GET \
-#     -H "Authorization: Bearer $UAA_ACCESS_TOKEN")
+pendingChanges=$(curl "https://$opsmanDomain/api/v0/staged/pending_changes" -k \
+    -X GET \
+    -H "Authorization: Bearer $UAA_ACCESS_TOKEN")
