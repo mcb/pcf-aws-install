@@ -191,7 +191,7 @@ pendingChanges=$(curl "https://$opsmanDomain/api/v0/staged/pending_changes" -k \
 
 postDeployErrands=$(echo $pendingChanges | jq --arg cfGuid $cfGuid '[.product_changes[] | select (.guid == $cfGuid) | .errands[] | select(.post_deploy == true) | .name]')
 
-applyChanges=$(jq -n --arg cfGuid $cfGuid --arg postDeployErrands $postDeployErrands '{
+applyChanges=$(jq -n --arg cfGuid $cfGuid --arg postDeployErrands "$postDeployErrands" '{
   enabled_errands: {
     $cfGuid: {
       post_deploy_errands: $postDeployErrands
