@@ -180,6 +180,11 @@ curl "https://$opsmanDomain/api/v0/staged/products/$cfGuid/jobs/$diegoBrainGuid/
 stemcell=$(ls stemcell/*.tgz)
 
 curl "https://$opsmanDomain/api/v0/stemcells" -k \
-    -X PUT \
+    -X POST \
     -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
     -F "stemcell[file]=@$stemcell"
+
+# Apply Changes
+# pendingChanges=$(curl "https://$opsmanDomain/api/v0/staged/pending_changes" -k \
+#     -X GET \
+#     -H "Authorization: Bearer $UAA_ACCESS_TOKEN")
