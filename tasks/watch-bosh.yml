@@ -1,0 +1,20 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: patrickcrocker/aws-cli
+    tag: 'latest'
+
+params:
+  OPS_MANAGER_DOMAIN:
+  OPS_MANAGER_ADMIN_USER:
+  OPS_MANAGER_ADMIN_PASS:
+  AWS_SSH_PRIVATE_KEY:
+
+inputs:
+- name: pipeline
+
+run:
+  path: pipeline/tasks/watch-bosh.sh
