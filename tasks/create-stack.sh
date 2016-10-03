@@ -2,7 +2,7 @@
 
 set -e -x
 
-stackname=$AWS_CLOUDFORMATION_STACK_NAME
+stackName=$AWS_CLOUDFORMATION_STACK_NAME
 sslcertarn=$AWS_SSL_CERTIFICATE_ARN
 keyName=$AWS_KEY_NAME
 
@@ -14,9 +14,9 @@ params="$params ParameterKey=06RdsPassword,ParameterValue=boshpass"
 params="$params ParameterKey=07SSLCertificateARN,ParameterValue=$sslcertarn"
 
 aws cloudformation create-stack \
-    --stack-name $stackname \
+    --stack-name $stackName \
     --template-body file://$template \
     --capabilities CAPABILITY_IAM \
     --parameters $params
 
-aws cloudformation wait stack-create-complete --stack-name $stackname
+aws cloudformation wait stack-create-complete --stack-name $stackName
