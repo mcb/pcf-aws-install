@@ -6,6 +6,7 @@ stackName=$AWS_CLOUDFORMATION_STACK_NAME
 opsmanDomain=$OPS_MANAGER_DOMAIN
 adminUser=$OPS_MANAGER_ADMIN_USER
 adminPass=$OPS_MANAGER_ADMIN_PASS
+hostedZoneId=$AWS_HOSTED_ZONE_ID
 systemDomain=$CF_SYSTEM_DOMAIN
 appsDomain=$CF_APPS_DOMAIN
 cfNotifyEmail=$CF_NOTIFY_EMAIL
@@ -18,6 +19,78 @@ cfS3Endpoint=$CF_S3_ENDPOINT
 
 # Get AWS Stack Outputs
 stack=$(aws cloudformation describe-stacks --stack-name $stackName)
+
+# asdf
+# Create CNAMEs
+pcfElbDnsName=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfElbDnsName") | .OutputValue')
+pcfElbSshDnsName=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfElbSshDnsName") | .OutputValue')
+pcfElbTcpDnsName=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfElbTcpDnsName") | .OutputValue')
+
+cat <<EOF >change-resource-record-sets.json
+{
+  "Comment": "create record sets for pcf",
+  "Changes": [
+    {
+      "Action": "CREATE",
+      "ResourceRecordSet": {
+        "Name": "*.$systemDomain",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "$pcfElbDnsName"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "CREATE",
+      "ResourceRecordSet": {
+        "Name": "*.$appsDomain",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "$pcfElbDnsName"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "CREATE",
+      "ResourceRecordSet": {
+        "Name": "ssh.$systemDomain",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "$pcfElbSshDnsName"
+          }
+        ]
+      }
+    },
+    {
+      "Action": "CREATE",
+      "ResourceRecordSet": {
+        "Name": "tcp.$appsDomain",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "$pcfElbTcpDnsName"
+          }
+        ]
+      }
+    }
+  ]
+}
+EOF
+
+createRecordSet=$(aws route53 change-resource-record-sets --hosted-zone-id $hostedZoneId --change-batch file://change-resource-record-sets.json)
+
+changeId=$(echo $createRecordSet | jq -r '.ChangeInfo.Id')
+
+aws route53 wait resource-record-sets-changed --id $changeId
 
 # Login to UAA
 uaac target https://$opsmanDomain/uaa --skip-ssl-validation
@@ -91,7 +164,7 @@ properties=$(jq -n "{
     },
     \".properties.system_blobstore.external.secret_key\": {
       value: {
-        secret: $(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfIamUserAccessKey") | .OutputValue' | jq -R .)
+        secret: $(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfIamUserSecretAccessKey") | .OutputValue' | jq -R .)
       }
     },
     \".properties.system_blobstore.external.buildpacks_bucket\": {

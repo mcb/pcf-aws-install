@@ -76,6 +76,7 @@ jobs:
       OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
       OPS_MANAGER_ADMIN_USER: {{ops-manager-admin-user}}
       OPS_MANAGER_ADMIN_PASS: {{ops-manager-admin-pass}}
+      AWS_HOSTED_ZONE_ID: {{aws-hosted-zone-id}}
       CF_SYSTEM_DOMAIN: {{cf-system-domain}}
       CF_APPS_DOMAIN: {{cf-apps-domain}}
       CF_NOTIFY_EMAIL: {{cf-notify-email}}
