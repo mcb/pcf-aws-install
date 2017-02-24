@@ -10,9 +10,12 @@ params="$params ParameterKey=07SSLCertificateARN,ParameterValue=$AWS_SSL_CERTIFI
 
 template=$(ls cloudformation/*cloudformation.json)
 
+#
+cat $template | jq -r '.Parameters."04RdsDBName".MinLength = 0 | .Parameters."06RdsPassword".MinLength = 0' > template.json
+
 aws cloudformation create-stack \
     --stack-name $AWS_CLOUDFORMATION_STACK_NAME \
-    --template-body file://$template \
+    --template-body file://template.json \
     --capabilities CAPABILITY_IAM \
     --parameters $params
 
