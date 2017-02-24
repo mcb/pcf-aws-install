@@ -20,6 +20,9 @@ jobs:
       <<: *aws-params
       AWS_KEY_NAME: {{aws-key-name}}
       AWS_SSL_CERTIFICATE_ARN: {{aws-ssl-certificate-arn}}
+      RDS_DBNAME: {{rds-dbname}}
+      RDS_USERNAME: {{rds-username}}
+      RDS_PASSWORD: {{rds-password}}
 
 - name: delete-rds
   plan:

@@ -13,6 +13,9 @@ params:
   AWS_DEFAULT_REGION:
   AWS_KEY_NAME:
   AWS_SSL_CERTIFICATE_ARN:
+  RDS_DBNAME:
+  RDS_USERNAME:
+  RDS_PASSWORD:
 
 inputs:
 - name: pipeline
