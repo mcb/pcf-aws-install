@@ -97,7 +97,7 @@ uaac target https://$opsmanDomain/uaa --skip-ssl-validation
 
 uaac token owner get opsman $adminUser -p $adminPass -s ''
 
-UAA_ACCESS_TOKEN=$(uaac context admin | grep access_token | sed -e 's/^\s*access_token:\s//')
+UAA_ACCESS_TOKEN=$(uaac context admin | grep access_token | awk '{ print $2 }')
 
 # Upload elastic-runtime
 file=$(ls elastic-runtime/cf-*.pivotal)
