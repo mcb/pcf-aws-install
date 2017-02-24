@@ -87,17 +87,6 @@ jobs:
       CF_SMTP_PASSWORD: {{cf-smtp-password}}
       CF_S3_ENDPOINT: {{cf-s3-endpoint}}
 
-- name: watch-bosh
-  plan:
-  - get: pipeline
-  - task: watch-bosh
-    file: pipeline/tasks/watch-bosh.yml
-    params:
-      OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
-      OPS_MANAGER_ADMIN_USER: {{ops-manager-admin-user}}
-      OPS_MANAGER_ADMIN_PASS: {{ops-manager-admin-pass}}
-      AWS_SSH_PRIVATE_KEY: {{aws-ssh-private-key}}
-
 resources:
 - name: pipeline
   type: git
