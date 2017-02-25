@@ -1,0 +1,28 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: patrickcrocker/lotc
+    tag: 'latest'
+
+params:
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
+  AWS_DEFAULT_REGION:
+  AWS_CLOUDFORMATION_STACK_NAME:
+  AWS_KEY_NAME:
+  AWS_SSH_PRIVATE_KEY:
+  OPS_MANAGER_DOMAIN:
+  OPS_MANAGER_ADMIN_USER:
+  OPS_MANAGER_ADMIN_PASS:
+  OPS_MANAGER_DECRYPT_PASSPHRASE:
+  NTP_SERVERS:
+  S3_ENDPOINT:
+
+inputs:
+- name: pipeline
+
+run:
+  path: pipeline/tasks/configure-opsman.sh

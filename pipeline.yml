@@ -2,7 +2,7 @@
 aws-params: &aws-params
   AWS_ACCESS_KEY_ID: {{aws-access-key-id}}
   AWS_SECRET_ACCESS_KEY: {{aws-secret-access-key}}
-  AWS_DEFAULT_REGION: {{aws-default-region}}
+  AWS_DEFAULT_REGION: {{aws-region}}
   AWS_CLOUDFORMATION_STACK_NAME: {{aws-cloudformation-stack-name}}
 
 groups:
@@ -46,6 +46,22 @@ jobs:
       AWS_HOSTED_ZONE_ID: {{aws-hosted-zone-id}}
       OPS_MANAGER_AMI: {{ops-manager-ami}}
       OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
+
+- name: configure-opsman
+  plan:
+  - get: pipeline
+  - task: configure-opsman
+    file: pipeline/tasks/configure-opsman.yml
+    params:
+      <<: *aws-params
+      AWS_KEY_NAME: {{aws-key-name}}
+      AWS_SSH_PRIVATE_KEY: {{aws-ssh-private-key}}
+      OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
+      OPS_MANAGER_ADMIN_USER: {{ops-manager-admin-user}}
+      OPS_MANAGER_ADMIN_PASS: {{ops-manager-admin-pass}}
+      OPS_MANAGER_DECRYPT_PASSPHRASE: {{ops-manager-decrypt-passphrase}}
+      NTP_SERVERS: {{ntp-servers}}
+      S3_ENDPOINT: {{aws-s3-endpoint}}
 
 - name: install-elastic-runtime
   plan:
