@@ -1,10 +1,21 @@
 ---
-
 aws-params: &aws-params
   AWS_ACCESS_KEY_ID: {{aws-access-key-id}}
   AWS_SECRET_ACCESS_KEY: {{aws-secret-access-key}}
   AWS_DEFAULT_REGION: {{aws-default-region}}
   AWS_CLOUDFORMATION_STACK_NAME: {{aws-cloudformation-stack-name}}
+
+groups:
+- name: deploy
+  jobs:
+  - create-stack
+  - launch-opsman
+  - install-elastic-runtime
+- name: destroy
+  jobs:
+  - delete-rds
+  - delete-stack
+  - terminate-opsman
 
 jobs:
 - name: create-stack
@@ -24,22 +35,6 @@ jobs:
       RDS_USERNAME: {{rds-username}}
       RDS_PASSWORD: {{rds-password}}
 
-- name: delete-rds
-  plan:
-  - get: pipeline
-  - task: delete-rds
-    file: pipeline/tasks/delete-rds.yml
-    params:
-      <<: *aws-params
-
-- name: delete-stack
-  plan:
-  - get: pipeline
-  - task: delete-stack
-    file: pipeline/tasks/delete-stack.yml
-    params:
-      <<: *aws-params
-
 - name: launch-opsman
   plan:
   - get: pipeline
@@ -50,16 +45,6 @@ jobs:
       AWS_KEY_NAME: {{aws-key-name}}
       AWS_HOSTED_ZONE_ID: {{aws-hosted-zone-id}}
       OPS_MANAGER_AMI: {{ops-manager-ami}}
-      OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
-
-- name: terminate-opsman
-  plan:
-  - get: pipeline
-  - task: terminate-opsman
-    file: pipeline/tasks/terminate-opsman.yml
-    params:
-      <<: *aws-params
-      AWS_HOSTED_ZONE_ID: {{aws-hosted-zone-id}}
       OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
 
 - name: install-elastic-runtime
@@ -89,6 +74,32 @@ jobs:
       CF_SMTP_USERNAME: {{cf-smtp-username}}
       CF_SMTP_PASSWORD: {{cf-smtp-password}}
       CF_S3_ENDPOINT: {{cf-s3-endpoint}}
+
+- name: delete-rds
+  plan:
+  - get: pipeline
+  - task: delete-rds
+    file: pipeline/tasks/delete-rds.yml
+    params:
+      <<: *aws-params
+
+- name: delete-stack
+  plan:
+  - get: pipeline
+  - task: delete-stack
+    file: pipeline/tasks/delete-stack.yml
+    params:
+      <<: *aws-params
+
+- name: terminate-opsman
+  plan:
+  - get: pipeline
+  - task: terminate-opsman
+    file: pipeline/tasks/terminate-opsman.yml
+    params:
+      <<: *aws-params
+      AWS_HOSTED_ZONE_ID: {{aws-hosted-zone-id}}
+      OPS_MANAGER_DOMAIN: {{ops-manager-domain}}
 
 resources:
 - name: pipeline
