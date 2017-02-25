@@ -56,6 +56,8 @@ jobs:
 - name: configure-opsman
   plan:
   - get: pipeline
+    trigger: true
+    passed: [launch-opsman]
   - task: configure-opsman
     file: pipeline/tasks/configure-opsman.yml
     params:
