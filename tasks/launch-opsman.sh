@@ -5,6 +5,9 @@ set -e -x
 stackname=$AWS_CLOUDFORMATION_STACK_NAME
 opsmanAmi=$OPS_MANAGER_AMI
 opsmanDomain=$OPS_MANAGER_DOMAIN
+adminUser=$OPS_MANAGER_ADMIN_USER
+adminPass=$OPS_MANAGER_ADMIN_PASS
+decryptPassphrase=$OPS_MANAGER_DECRYPT_PASSPHRASE
 keyName=$AWS_KEY_NAME
 hostedZoneId=$AWS_HOSTED_ZONE_ID
 
@@ -62,3 +65,30 @@ createRecordSet=$(aws route53 change-resource-record-sets --hosted-zone-id $host
 changeId=$(echo $createRecordSet | jq -r '.ChangeInfo.Id')
 
 aws route53 wait resource-record-sets-changed --id $changeId
+
+# setup ops manager identity provider
+
+setup=$(jq -n \
+--arg decryptPassphrase $decryptPassphrase \
+--arg adminUser $adminUser \
+--arg adminPass $adminPass \
+'{
+  setup: {
+    decryption_passphrase: $decryptPassphrase,
+    decryption_passphrase_confirmation: $decryptPassphrase,
+    eula_accepted: "true",
+    identity_provider: "internal",
+    admin_user_name: $adminUser,
+    admin_password: $adminPass,
+    admin_password_confirmation: $adminPass,
+  }
+}')
+
+curl "https://$opsmanDomain/api/v0/setup" -k \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -d "$setup"
+
+# TODO: figure out a better way to poll for availability
+# https://opsmgr.anvil.pcfdemo.com/login/ensure_availability
+sleep 75

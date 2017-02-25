@@ -5,39 +5,12 @@ set -e -x
 opsmanDomain=$OPS_MANAGER_DOMAIN
 adminUser=$OPS_MANAGER_ADMIN_USER
 adminPass=$OPS_MANAGER_ADMIN_PASS
-decryptPassphrase=$OPS_MANAGER_DECRYPT_PASSPHRASE
 stackname=$AWS_CLOUDFORMATION_STACK_NAME
 keyName=$AWS_KEY_NAME
 sshPrivateKey=$AWS_SSH_PRIVATE_KEY
 region=$AWS_DEFAULT_REGION
 ntpServers=$NTP_SERVERS
 s3endpoint=$S3_ENDPOINT
-
-# setup ops manager identity provider
-setup=$(jq -n \
---arg decryptPassphrase $decryptPassphrase \
---arg adminUser $adminUser \
---arg adminPass $adminPass \
-'{
-  setup: {
-    decryption_passphrase: $decryptPassphrase,
-    decryption_passphrase_confirmation: $decryptPassphrase,
-    eula_accepted: "true",
-    identity_provider: "internal",
-    admin_user_name: $adminUser,
-    admin_password: $adminPass,
-    admin_password_confirmation: $adminPass,
-  }
-}')
-
-curl "https://$opsmanDomain/api/v0/setup" -k \
-    -X POST \
-    -H "Content-Type: application/json" \
-    -d "$setup"
-
-# TODO: figure out a better way to poll for availability
-# https://opsmgr.anvil.pcfdemo.com/login/ensure_availability
-sleep 75
 
 # login to UAA and get the access token
 uaac target https://$opsmanDomain/uaa --skip-ssl-validation
