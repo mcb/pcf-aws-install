@@ -52,9 +52,6 @@ properties=$(cat <<EOF
       "access_key": "$accessKeyId",
       "secret_key": "$secretAccessKey",
       "signature_version": "2"
-    },
-    "security_tokens": {
-      "vm_password_type": "generate"
     }
   }
 }
