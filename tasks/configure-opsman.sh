@@ -26,6 +26,7 @@ accessKeyId=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "
 secretAccessKey=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfIamUserSecretAccessKey") | .OutputValue')
 vpcId=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfVpc") | .OutputValue')
 vmsSecurityGroupId=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfVmsSecurityGroupId") | .OutputValue')
+s3bucketOpsManager=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfOpsManagerS3Bucket") | .OutputValue')
 
 sshPrivateKeyInline=$(echo "$sshPrivateKey" | awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}')
 
