@@ -53,53 +53,13 @@ properties=$(cat <<EOF
       "secret_key": "$secretAccessKey",
       "signature_version": "2"
     },
-    "security_configuration": {
-      "generate_vm_passwords": "true"
+    "security_tokens": {
+      "vm_password_type": "generate"
     }
   }
 }
 EOF
 )
-
-# properties=$(jq -n \
-# --arg accessKeyId $accessKeyId \
-# --arg secretAccessKey $secretAccessKey \
-# --arg vpcId $vpcId \
-# --arg vmsSecurityGroupId $vmsSecurityGroupId \
-# --arg keyName $keyName \
-# --arg sshPrivateKey $sshPrivateKeyInline \
-# --arg region $region \
-# --arg ntpServers $ntpServers \
-# --arg s3endpoint $s3endpoint \
-# --arg s3bucketOpsManager $s3bucketOpsManager \
-# '{
-#   "iaas_configuration": {
-#     "access_key_id": "$accessKeyId",
-#     "secret_access_key": "$secretAccessKey",
-#     "vpc_id": "$vpcId",
-#     "security_group": "$vmsSecurityGroupId",
-#     "key_pair_name": "$keyName",
-#     "ssh_private_key": "$sshPrivateKey",
-#     "region": "$region"
-#   },
-#   "director_configuration": {
-#     "ntp_servers_string": "$ntpServers",
-#     "resurrector_enabled": true,
-#     "post_deploy_enabled": true,
-#     "database_type": "internal",
-#     "blobstore_type": "s3",
-#     "s3_blobstore_options": {
-#       "endpoint": "$s3endpoint",
-#       "bucket_name": "$s3bucketOpsManager",
-#       "access_key": "$accessKeyId",
-#       "secret_key": "$secretAccessKey",
-#       "signature_version": "2"
-#     },
-#     "security_configuration": {
-#       "generate_vm_passwords": true
-#     }
-#   }
-# }')
 
 curl "https://$opsmanDomain/api/v0/staged/director/properties" -k \
     -X PUT \
