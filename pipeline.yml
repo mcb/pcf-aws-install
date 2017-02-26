@@ -39,8 +39,6 @@ jobs:
 - name: launch-opsman
   plan:
   - get: pipeline
-    trigger: true
-    passed: [create-stack]
   - task: launch-opsman
     file: pipeline/tasks/launch-opsman.yml
     params:
@@ -56,8 +54,6 @@ jobs:
 - name: configure-opsman
   plan:
   - get: pipeline
-    trigger: true
-    passed: [launch-opsman]
   - task: configure-opsman
     file: pipeline/tasks/configure-opsman.yml
     params:
