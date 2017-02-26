@@ -29,31 +29,21 @@ vmsSecurityGroupId=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputK
 
 sshPrivateKeyInline=$(echo "$sshPrivateKey" | awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}')
 
-properties=$(jq -n \
---arg accessKeyId $accessKeyId \
---arg secretAccessKey $secretAccessKey \
---arg vpcId $vpcId \
---arg vmsSecurityGroupId $vmsSecurityGroupId \
---arg keyName $keyName \
---arg sshPrivateKey "$sshPrivateKeyInline" \
---arg region $region \
---arg ntpServers $ntpServers \
---arg s3endpoint $s3endpoint \
---arg s3bucketOpsManager $s3bucketOpsManager \
-'{
+properties=$(cat <<EOF
+{
   "iaas_configuration": {
     "access_key_id": "$accessKeyId",
     "secret_access_key": "$secretAccessKey",
     "vpc_id": "$vpcId",
     "security_group": "$vmsSecurityGroupId",
     "key_pair_name": "$keyName",
-    "ssh_private_key": "$sshPrivateKey",
+    "ssh_private_key": "$sshPrivateKeyInline",
     "region": "$region"
   },
   "director_configuration": {
     "ntp_servers_string": "$ntpServers",
-    "resurrector_enabled": true,
-    "post_deploy_enabled": true,
+    "resurrector_enabled": "true",
+    "post_deploy_enabled": "true",
     "database_type": "internal",
     "blobstore_type": "s3",
     "s3_blobstore_options": {
@@ -64,10 +54,52 @@ properties=$(jq -n \
       "signature_version": "2"
     },
     "security_configuration": {
-      "generate_vm_passwords": true
+      "generate_vm_passwords": "true"
     }
   }
-}')
+}
+EOF
+)
+
+# properties=$(jq -n \
+# --arg accessKeyId $accessKeyId \
+# --arg secretAccessKey $secretAccessKey \
+# --arg vpcId $vpcId \
+# --arg vmsSecurityGroupId $vmsSecurityGroupId \
+# --arg keyName $keyName \
+# --arg sshPrivateKey $sshPrivateKeyInline \
+# --arg region $region \
+# --arg ntpServers $ntpServers \
+# --arg s3endpoint $s3endpoint \
+# --arg s3bucketOpsManager $s3bucketOpsManager \
+# '{
+#   "iaas_configuration": {
+#     "access_key_id": "$accessKeyId",
+#     "secret_access_key": "$secretAccessKey",
+#     "vpc_id": "$vpcId",
+#     "security_group": "$vmsSecurityGroupId",
+#     "key_pair_name": "$keyName",
+#     "ssh_private_key": "$sshPrivateKey",
+#     "region": "$region"
+#   },
+#   "director_configuration": {
+#     "ntp_servers_string": "$ntpServers",
+#     "resurrector_enabled": true,
+#     "post_deploy_enabled": true,
+#     "database_type": "internal",
+#     "blobstore_type": "s3",
+#     "s3_blobstore_options": {
+#       "endpoint": "$s3endpoint",
+#       "bucket_name": "$s3bucketOpsManager",
+#       "access_key": "$accessKeyId",
+#       "secret_key": "$secretAccessKey",
+#       "signature_version": "2"
+#     },
+#     "security_configuration": {
+#       "generate_vm_passwords": true
+#     }
+#   }
+# }')
 
 curl "https://$opsmanDomain/api/v0/staged/director/properties" -k \
     -X PUT \
