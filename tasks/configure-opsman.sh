@@ -35,7 +35,7 @@ properties=$(jq -n \
 --arg vpcId $vpcId \
 --arg vmsSecurityGroupId $vmsSecurityGroupId \
 --arg keyName $keyName \
---arg sshPrivateKey $sshPrivateKeyInline \
+--arg sshPrivateKey "$sshPrivateKeyInline" \
 --arg region $region \
 --arg ntpServers $ntpServers \
 --arg s3endpoint $s3endpoint \
