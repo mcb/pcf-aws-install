@@ -28,52 +28,77 @@ vpcId=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfVpc
 vmsSecurityGroupId=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfVmsSecurityGroupId") | .OutputValue')
 s3bucketOpsManager=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfOpsManagerS3Bucket") | .OutputValue')
 
-sshPrivateKeyInline=$(echo "$sshPrivateKey" | awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}')
+# AWS Config
 
-properties=$(cat <<EOF
-{
-  "iaas_configuration": {
-    "access_key_id": "$accessKeyId",
-    "secret_access_key": "$secretAccessKey",
-    "vpc_id": "$vpcId",
-    "security_group": "$vmsSecurityGroupId",
-    "key_pair_name": "$keyName",
-    "ssh_private_key": "$sshPrivateKeyInline",
-    "region": "$region"
-  },
-  "director_configuration": {
-    "ntp_servers_string": "$ntpServers",
-    "resurrector_enabled": "true",
-    "post_deploy_enabled": "true",
-    "database_type": "internal",
-    "blobstore_type": "s3",
-    "s3_blobstore_options": {
-      "endpoint": "$s3endpoint",
-      "bucket_name": "$s3bucketOpsManager",
-      "access_key": "$accessKeyId",
-      "secret_key": "$secretAccessKey",
-      "signature_version": "2"
-    }
+iaasConfiguration=$(jq -n \
+--arg accessKeyId "$accessKeyId" \
+--arg secretAccessKey "$secretAccessKey" \
+--arg vpcId "$vpcId" \
+--arg vmsSecurityGroupId "$vmsSecurityGroupId" \
+--arg keyName "$keyName" \
+--arg sshPrivateKey "$sshPrivateKey" \
+--arg region "$region" \
+'{
+  iaas_configuration: {
+    access_key_id: $accessKeyId,
+    secret_access_key: $secretAccessKey,
+    vpc_id: $vpcId,
+    security_group: $vmsSecurityGroupId,
+    key_pair_name: $keyName,
+    ssh_private_key: $sshPrivateKey,
+    region: $region
   }
-}
-EOF
-)
+}')
 
 curl "https://$opsmanDomain/api/v0/staged/director/properties" -k \
     -X PUT \
     -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
-    -d "$properties"
+    -d "$iaasConfiguration"
+
+# Director Config
+
+directorConfiguration=$(jq -n \
+--arg ntpServers "$ntpServers" \
+--arg s3endpoint "$s3endpoint" \
+--arg s3bucketOpsManager "$s3bucketOpsManager" \
+--arg accessKeyId "$accessKeyId" \
+--arg secretAccessKey "$secretAccessKey" \
+'{
+  director_configuration: {
+    ntp_servers_string: $ntpServers,
+    resurrector_enabled: true,
+    post_deploy_enabled: true,
+    database_type: "internal",
+    blobstore_type: "s3",
+    s3_blobstore_options: {
+      endpoint: $s3endpoint,
+      bucket_name: $s3bucketOpsManager,
+      access_key: $accessKeyId,
+      secret_key: $secretAccessKey,
+      signature_version: 2
+    }
+  }
+}')
+
+# revert to internal because s3 endpoint configuration doesn't work yet...
+directorConfiguration=$(echo $directorConfiguration | jq -r '.director_configuration.blobstore_type = "local" | del(.director_configuration.s3_blobstore_options)')
+
+curl "https://$opsmanDomain/api/v0/staged/director/properties" -k \
+    -X PUT \
+    -H "Authorization: Bearer $UAA_ACCESS_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "$directorConfiguration"
 
 # Configure "Create Availability Zones"
 
 az1=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfPrivateSubnetAvailabilityZone") | .OutputValue')
 
 availabilityZones=$(jq -n \
---arg az1 $az1
+--arg az1 $az1 \
 '{
-  "availability_zones": [{
-    "name": "$az1"
+  availability_zones: [{
+    name: $az1
   }]
 }')
 
@@ -88,20 +113,20 @@ curl "https://$opsmanDomain/api/v0/staged/director/availability_zones" -k \
 vpcSubnetId=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfPrivateSubnetId") | .OutputValue')
 
 networks=$(jq -n \
---arg vpcSubnetId $vpcSubnetId
---arg az1 $az1
+--arg vpcSubnetId $vpcSubnetId \
+--arg az1 $az1 \
 '{
-  "icmp_checks_enabled": false,
-  "networks": [{
-    "name": "pcf-network",
-    "service_network": false,
-    "subnets": [{
-      "iaas_identifier": "$vpcSubnetId",
-      "cidr": "10.0.16.0/20",
-      "reserved_ip_ranges": "10.0.16.1-10.0.16.9",
-      "dns": "10.0.0.2",
-      "gateway": "10.0.16.1",
-      "availability_zone_names": ["$az1"]
+  icmp_checks_enabled: false,
+  networks: [{
+    name: "pcf-network",
+    service_network: false,
+    subnets: [{
+      iaas_identifier: $vpcSubnetId,
+      cidr: "10.0.16.0/20",
+      reserved_ip_ranges: "10.0.16.1-10.0.16.9",
+      dns: "10.0.0.2",
+      gateway: "10.0.16.1",
+      availability_zone_names: [$az1]
     }]
   }]
 }')
@@ -115,14 +140,14 @@ curl "https://$opsmanDomain/api/v0/staged/director/networks" -k \
 # Configure "Assign AZs and Networks"
 
 networkAndAz=$(jq -n \
---arg az1 $az1
+--arg az1 $az1 \
 '{
-    "network_and_az": {
-      "network": {
-        "name": "pcf-network"
+    network_and_az: {
+      network: {
+        name: "pcf-network"
       },
-      "singleton_availability_zone": {
-        "name": "$az1"
+      singleton_availability_zone: {
+        name: $az1
       }
     }
 }')
