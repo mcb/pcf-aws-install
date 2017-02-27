@@ -17,17 +17,15 @@ recordSets=$(aws route53 list-resource-record-sets --hosted-zone-id $hostedZoneI
 recordSet=$(echo $recordSets | jq -r --arg domain "$opsmanDomain." '.ResourceRecordSets[] | select(.Name == $domain and .Type == "A")')
 publicIp=$(echo $recordSet | jq -r '.ResourceRecords[0].Value')
 
-cat <<EOF >change-resource-record-sets.json
-{
-  "Comment": "delete record set for opsmanager",
-  "Changes": [
-    {
-      "Action": "DELETE",
-      "ResourceRecordSet": $recordSet
-    }
-  ]
-}
-EOF
+jq -n \
+--argjson recordSet "$recordSet" \
+'{
+  Comment: "delete record set for opsmanager",
+  Changes: [{
+    Action: "DELETE",
+    ResourceRecordSet: $recordSet
+  }]
+}' > change-resource-record-sets.json
 
 changeRecordSet=$(aws route53 change-resource-record-sets --hosted-zone-id $hostedZoneId --change-batch file://change-resource-record-sets.json)
 changeId=$(echo $changeRecordSet | jq -r '.ChangeInfo.Id')
@@ -40,7 +38,6 @@ address=$(aws ec2 describe-addresses | jq -r --arg publicIp $publicIp '.Addresse
 
 associationId=$(echo $address | jq -r '.AssociationId')
 allocationId=$(echo $address | jq -r '.AllocationId')
-instanceId=$(echo $address | jq -r '.InstanceId')
 
 aws ec2 disassociate-address --association-id $associationId
 aws ec2 release-address --allocation-id $allocationId
@@ -51,7 +48,7 @@ vpcId=$(echo $stack | jq -r '.Stacks[0].Outputs[] | select(.OutputKey == "PcfVpc
 
 instanceIds=$(aws ec2 describe-instances --filters Name=vpc-id,Values=$vpcId | jq -r .Reservations[].Instances[].InstanceId)
 
-aws ec2 terminate-instances --instance-ids $instances
+aws ec2 terminate-instances --instance-ids $instanceIds
 aws ec2 wait instance-terminated --instance-ids $instanceIds
 
 # Delete stack
