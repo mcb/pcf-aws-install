@@ -8,12 +8,13 @@ image_resource:
     tag: '1.0.1-rc.2'
 
 params:
-  AWS_ACCESS_KEY_ID:
-  AWS_SECRET_ACCESS_KEY:
-  AWS_DEFAULT_REGION:
+  OPS_MANAGER_DOMAIN:
+  OPS_MANAGER_ADMIN_USER:
+  OPS_MANAGER_ADMIN_PASS:
+  AWS_SSH_PRIVATE_KEY:
 
 inputs:
 - name: pipeline
 
 run:
-  path: pipeline/tasks/delete-rds.sh
+  path: pipeline/tasks/stop-pcf.sh
