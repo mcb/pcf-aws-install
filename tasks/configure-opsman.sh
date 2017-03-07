@@ -142,7 +142,7 @@ curl "https://$opsmanDomain/api/v0/staged/director/networks" -k \
 networkAndAz=$(jq -n \
 --arg az1 $az1 \
 '{
-    network_and_az: {
+    networks_and_azs: {
       network: {
         name: "pcf-network"
       },
