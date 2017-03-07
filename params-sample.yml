@@ -1,0 +1,39 @@
+ntp-servers: 0.amazon.pool.ntp.org, 1.amazon.pool.ntp.org
+aws-access-key-id:
+aws-secret-access-key:
+aws-region:
+aws-cloudformation-stack-name:
+aws-s3-endpoint:
+aws-ssl-certificate-arn:
+aws-hosted-zone-id:
+aws-key-name:
+aws-ssh-private-key:
+
+rds-dbname:
+rds-username:
+rds-password:
+
+ops-manager-ami:
+ops-manager-domain:
+ops-manager-admin-user:
+ops-manager-admin-pass:
+ops-manager-decrypt-passphrase:
+
+cf-system-domain:
+cf-apps-domain:
+cf-notify-email:
+cf-smtp-from:
+cf-smtp-address:
+cf-smtp-port:
+cf-smtp-username:
+cf-smtp-password:
+cf-s3-endpoint:
+
+git-uri: http://github.com/patrickcrocker/pcf-aws-install.git
+git-branch: master
+
+pivnet-api-token:
+
+# needs to be changed on update
+elstic-runtime-version:
+elstic-runtime-stemcell-version:
