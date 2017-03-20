@@ -7,13 +7,16 @@ aws-s3-endpoint:
 aws-ssl-certificate-arn:
 aws-hosted-zone-id:
 aws-key-name:
-aws-ssh-private-key:
+aws-ssh-private-key: |
+  -----BEGIN RSA PRIVATE KEY-----
+  -----END RSA PRIVATE KEY-----
 
 rds-dbname:
 rds-username:
 rds-password:
 
-ops-manager-ami:
+# needs to be changed on update
+ops-manager-ami: ami-9f4490f0
 ops-manager-domain:
 ops-manager-admin-user:
 ops-manager-admin-pass:
@@ -29,11 +32,11 @@ cf-smtp-username:
 cf-smtp-password:
 cf-s3-endpoint:
 
-git-uri: http://github.com/patrickcrocker/pcf-aws-install.git
+git-uri: http://github.com/mcb/pcf-aws-install.git
 git-branch: master
 
 pivnet-api-token:
 
 # needs to be changed on update
-elstic-runtime-version:
-elstic-runtime-stemcell-version:
+elstic-runtime-version: 1.9.10
+elstic-runtime-stemcell-version: 3312.20
